@@ -10,13 +10,20 @@
 
 / {
   macros {
-    lang: macro_lctrl_lshift {
+    lang: lang {
       compatible = "zmk,behavior-macro";
       #binding-cells = <0>;
       bindings =
         <&macro_press &kp LCTRL>,
         <&macro_tap &kp LSHFT>,
         <&macro_release &kp LCTRL>;
+    };
+    expipe: expipe {
+      compatible = "zmk,behavior-macro";
+      #binding-cells = <0>;
+      bindings =
+        <&macro_tap &kp PIPE>,
+        <&macro_tap &kp GT>;
     };
   };
 };
@@ -28,19 +35,54 @@
         #binding-cells = <2>;
         flavor = "tap-preferred";
         tapping-term-ms = <500>;
+        quick-tap-ms = <500>;
         bindings = <&kp>, <&kp>;
       };
-      td_home: tap_dance_home {
+      td_lang_esc: td_lang_esc {
         compatible = "zmk,behavior-tap-dance";
         #binding-cells = <0>;
         tapping-term-ms = <500>;
-        bindings = <&kp LSHFT>, <&kp HOME>;
+        bindings =
+          <&lang>,
+          <&kp ESC>;
       };
-      td_end: tap_dance_end {
+      td_prnt_cw: td_prnt_cw {
         compatible = "zmk,behavior-tap-dance";
         #binding-cells = <0>;
         tapping-term-ms = <500>;
-        bindings = <&kp LSHFT>, <&kp END>;
+        bindings =
+          <&kp PSCRN>,
+          <&caps_word>;
+      };
+      td_bspc_ret: td_bspc_ret {
+        compatible = "zmk,behavior-tap-dance";
+        #binding-cells = <0>;
+        tapping-term-ms = <500>;
+        bindings =
+          <&kp BSPC>,
+          <&kp RET>;
+      };
+      td_insert_pgup: td_insert_pgup {
+        compatible = "zmk,behavior-tap-dance";
+        #binding-cells = <0>;
+        tapping-term-ms = <500>;
+        bindings =
+          <&kp INSERT>,
+          <&kp PG_UP>;
+      };
+      td_end_win_pgdn: td_end_win_pgdn {
+        compatible = "zmk,behavior-tap-dance";
+        #binding-cells = <0>;
+        tapping-term-ms = <500>;
+        bindings =
+          <&mt RGUI END>,
+          <&kp PG_DN>;
+      };
+      morph_pipe: morph_pipe {
+        compatible = "zmk,behavior-mod-morph";
+        #binding-cells = <0>;
+        bindings = <&expipe>, <&kp PIPE>;
+        mods = <(MOD_LSFT)>;
       };
     };
 
@@ -48,71 +90,30 @@
         compatible = "zmk,keymap";
 
         default_layer {
-            // ------------------------------------------------------------------------------------------------------------
-            // |  ESC  |  1  |  2  |  3   |  4   |  5   |                   |  6   |  7    |  8    |  9   |   0   |   `   |
-            // |  TAB  |  Q  |  W  |  E   |  R   |  T   |                   |  Y   |  U    |  I    |  O   |   P   |   -   |
-            // |  CTRL |  A  |  S  |  D   |  F   |  G   |                   |  H   |  J    |  K    |  L   |   ;   |   '   |
-            // | SHIFT |  Z  |  X  |  C   |  V   |  B   |   "["  |  |  "]"  |  N   |  M    |  ,    |  .   |   /   | SHIFT |
-            //                     | ALT  | GUI  | LOWER|  SPACE |  | ENTER | RAISE| BSPC  | GUI   |
-// RBRC
             bindings = <
-&ht_tp F1 N1
-        &ht_tp F2 N2
-                &ht_tp F3 N3
-                        &ht_tp F4 N4  &ht_tp F5 N5
-                                                &ht_tp F11 KP_PLUS                      
-                                                                                  &ht_tp F12 MINUS
-                                                                                                   &ht_tp F6 N6
-                                                                                                            &ht_tp F7 N7
-                                                                                                                    &ht_tp F8 N8
-                                                                                                                               &ht_tp F9 N9
-                                                                                                                                          &ht_tp F10 N0
-&kp Q   &kp W   &kp E   &kp R   &kp T     &mt LALT GRAVE                          &mt LALT PIPE    &kp Y     &kp U  &kp I      &kp O      &kp P
-&kp A   &kp S   &kp D   &kp F   &kp G     &mt LSHFT TAB                           &mt RSHFT SQT    &kp H     &kp J  &kp K      &kp L      &kp SEMI
-&kp Z   &kp X   &kp C   &kp V   &kp B     &mt LCTRL LBKT  &kp LGUI  &caps_word    &mt RCTRL RBKT   &kp N     &kp M  &kp COMMA  &kp DOT    &kp FSLH
-                        &td_home
-                                &kp BSPC  &kp ESC       &lang       &kp DELETE    &kp RET           &kp SPACE   &td_end
+&ht_tp F1 N1    &ht_tp F2 N2    &ht_tp F3 N3
+&ht_tp F4 N4    &ht_tp F5 N5    &ht_tp F11 KP_PLUS
+                                                                          &ht_tp F12 MINUS     &ht_tp F6 N6      &ht_tp F7 N7
+                                                                          &ht_tp F8 N8         &ht_tp F9 N9      &ht_tp F10 N0
+&kp Q   &kp W   &kp E   &kp R   &kp T     &kp GRAVE                       &morph_pipe   &kp Y     &kp U  &kp I      &kp O      &kp P
+&kp A   &kp S   &kp D   &kp F   &kp G     &kp TAB                         &kp SQT    &kp H     &kp J  &kp K      &kp L      &kp SEMI
+&kp Z   &kp X   &kp C   &kp V   &kp B     &kp LBKT &caps_word &kp &td_insert_pgup  &kp RBKT   &kp N     &kp M  &kp COMMA  &kp DOT    &kp FSLH
+                  &mt LCTRL ESC   &mt LSHIFT TAB  &td_lang_esc  &lt 1 HOME
+                                                  &mt RGUI END    &kp BSPC           &mt RSHIFT SPACE   &mt RALT RET
             >;
-
-            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN>;
         };
 
         lower_layer {
-            // --------------------------------------------------------------------------------------------------------------
-            // | LPAD  | BRDn | BRUp |  MUT |  Vo- |  Vo+ |                   |      |       |       |      |       |       |
-            // |  F1   |  F2  |  F3  |  F4  |  F5  |  F6  |                   |  F7  |  F8   |  F9   |  F10 |  F11  |  F12  |
-            // |   `   |  !   |  @   |  #   |  $   |  %   |                   |  ^   |  &    |  *    |  (   |   )   |   ~   |
-            // |       |      |      |      |      |      |        |  |       |      |  _    |  +    |  {   |   }   |  "|"  |
-            //                       |      |      |      |        |  |       |      |       |       |
 
             bindings = <
-&trans     &kp C_BRI_DN  &kp C_BRI_UP  &kp C_MUTE  &kp C_VOL_DN  &kp C_VOL_UP                    &trans     &trans     &trans           &trans    &trans    &trans
-&kp F1     &kp F2        &kp F3        &kp F4      &kp F5        &kp F6                          &kp F7     &kp F8     &kp F9           &kp F10   &kp F11   &kp F12
-&kp GRAVE  &kp EXCL      &kp AT        &kp HASH    &kp DOLLAR    &kp PRCNT                       &kp CARET  &kp AMPS   &kp KP_MULTIPLY  &kp LPAR  &kp RPAR  &kp TILDE
-&trans     &trans        &trans        &trans      &trans        &trans        &trans    &trans  &trans     &kp MINUS  &kp KP_PLUS      &kp LBRC  &kp RBRC  &kp PIPE
-                                       &trans      &trans        &trans        &trans    &trans  &trans     &trans     &trans
+&kp F1     &kp F2        &kp F3        &kp F4      &kp F5        &kp F11                         &kp F12     &kp F6        &kp F7        &kp F8       &kp F9       &kp F10
+&trans     &trans        &trans        &trans      &trans        &trans                          &kp BSLH     &trans        &trans        &trans        &trans        &trans
+&trans     &trans        &trans        &trans      &trans        &trans                          &kp HOME     &kp LEFT      &kp DOWN      &kp UP        &kp RIGHT     &kp END
+&trans     &trans        &trans        &trans      &trans        &trans        &trans    &trans  &trans     &trans        &trans        &trans        &trans        &trans
+                                       &trans      &trans        &trans        &trans    &trans  &kp DELETE     &trans        &trans
             >;
-
-            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN>;
-        };
-
-        raise_layer {
-            // ------------------------------------------------------------------------------------------------------------
-            // |       |     |     |      |      |      |                   |      |       |       |      |       |       |
-            // |   `   |  1  |  2  |  3   |  4   |  5   |                   |  6   |   7   |   8   |  9   |   0   |       |
-            // |   F1  |  F2 |  F3 |  F4  |  F5  |  F6  |                   |      |   <-  |   v   |  ^   |  ->   |       |
-            // |   F7  |  F8 |  F9 |  F10 |  F11 |  F12 |        |  |       |  +   |   -   |   =   |  [   |   ]   |   \   |
-            //                     |      |      |      |        |  |       |      |       |       |
-
-            bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans                    &bt BT_CLR   &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4
-&trans  &trans  &trans  &trans  &trans  &trans                    &kp N6       &kp N7        &kp N8        &kp N9        &kp N0        &trans
-&trans  &trans  &trans  &trans  &trans  &trans                    &trans       &kp LEFT      &kp DOWN      &kp UP        &kp RIGHT     &trans
-&trans  &trans  &trans  &trans  &trans  &trans  &trans    &trans  &kp KP_PLUS  &kp MINUS     &kp EQUAL     &kp LBKT      &kp RBKT      &kp BSLH
-                        &trans  &trans  &trans  &trans    &trans  &trans       &trans        &trans
-            >;
-
-            sensor-bindings = <&inc_dec_kp 0 0>;
         };
     };
 };
+
+// &bt BT_CLR &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4
